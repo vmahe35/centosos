@@ -45,3 +45,8 @@ openstack flavor create --id 0 --vcpus 1 --ram 64 --disk 1 m1.nano
 openstack security group create secgroup --description "Allowing ICMP and SSH"
 openstack security group rule create --proto icmp secgroup
 openstack security group rule create --proto tcp --dst-port 22 secgroup
+
+
+# Creating two CirrOS instances
+openstack server create --flavor m1.nano --image cirros --nic net-id=selfservice --security-group secgroup cirrhose1
+openstack server create --flavor m1.nano --image cirros --nic net-id=selfservice2 --security-group secgroup cirrhose2
