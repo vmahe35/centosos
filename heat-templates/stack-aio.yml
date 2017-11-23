@@ -1,0 +1,111 @@
+heat_template_version: 2013-05-23
+
+description: Our network topology in one template.
+
+parameters:
+  image:
+    type: string
+    description: Image to be used for server.
+    default: cirros
+  flavor:
+    type: string
+    description: Flavor to be used for the instance.
+    default: m1.nano
+  key:
+    type: string
+    description: Key pair to be used for the instance.
+    default: mykey
+  public-network:
+    type: string
+    description: The external network
+    default: provider
+  dns:
+    type: comma_delimited_list
+    description: List of DNS nameservers
+    default: '10.193.21.160,10.193.21.162'
+
+resources:
+  network1:
+    type: OS::Neutron::Net
+    properties:
+      name: Heat-Net1
+
+  subnet1:
+    type: OS::Neutron::Subnet
+    properties:
+      network_id: { get_resource: network1 }
+      name: Heat-Subnet1
+      cidr: 1.0.0.0/8
+      dns_nameservers: { get_param: dns }
+
+  network2:
+    type: OS::Neutron::Net
+    properties:
+      name: Heat-Net2
+
+  subnet2:
+    type: OS::Neutron::Subnet
+    properties:
+      network_id: { get_resource: network2 }
+      name: Heat-Subnet2
+      cidr: 2.0.0.0/8
+      dns_nameservers: { get_param: dns }
+
+  router:
+    type: OS::Neutron::Router
+    properties:
+      external_gateway_info:
+        network: { get_param: public-network }
+
+  router-interface1:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router_id: { get_resource: router }
+      subnet: { get_resource: subnet1 }
+
+  router-interface2:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router_id: { get_resource: router }
+      subnet: { get_resource: subnet2 }
+
+  security-group:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      name: secgroup
+      rules: [{"protocol": icmp, "direction": ingress}, {"protocol": tcp, "direction": ingress, "port_range_min": 22, "port_range_max": 22}]
+
+  instance1:
+    type: OS::Nova::Server
+    properties:
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      key_name: { get_param: key }
+      networks: [{"network": { get_resource: network1 }}]
+      security_groups: [{ get_resource: security-group }]
+
+  instance2:
+    type: OS::Nova::Server
+    properties:
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      key_name: { get_param: key }
+      networks: [{"network": { get_resource: network2 }}]
+      security_groups: [{ get_resource: security-group }]
+
+outputs:
+  name-i1:
+    description: Name of instance1.
+    value: { get_attr: [instance1, name] }
+  ip-i1:
+    description: The IP address of instance1.
+    value: { get_attr: [instance1, first_address] }
+  name-i2:
+    description: Name of instance2.
+    value: { get_attr: [instance2, name] }
+  ip-i2:
+    description: The IP address of instance2.
+    value: { get_attr: [instance2, first_address] }
+  router-name:
+    description: Created router name
+    value: { get_attr: [router, name] }
