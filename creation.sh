@@ -42,5 +42,6 @@ openstack router set --external-gateway provider router
 openstack flavor create --id 0 --vcpus 1 --ram 64 --disk 1 m1.nano
 
 # Opening ICMP and SSH ports in security group default
-openstack security group rule create --proto icmp default
-openstack security group rule create --proto tcp --dst-port 22 default
+openstack security group create secgroup --description "Allowing ICMP and SSH"
+openstack security group rule create --proto icmp secgroup
+openstack security group rule create --proto tcp --dst-port 22 secgroup
