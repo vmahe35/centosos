@@ -11,7 +11,13 @@ curl -i   -H "Content-Type: application/json" -X POST -d '
           "password": "root"
         }
       }
+    },
+    "scope": {
+      "project": {
+        "name": "admin",
+        "domain": { "id": "default" }
+      }
     }
   }
-}'   "http://controller:5000/v3/auth/tokens"; echo
+}'   "http://controller:35357/v3/auth/tokens"; echo
 
