@@ -49,10 +49,10 @@ systemctl start openstack-glance-api.service \
 
 # Uploading CirrOS image
 yum install -y wget
-wget http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-disk.img
+wget http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img
 
 openstack image create "cirros" \
-  --file cirros-0.3.5-x86_64-disk.img \
+  --file cirros-0.4.0-x86_64-disk.img \
   --disk-format qcow2 --container-format bare \
   --public
 
