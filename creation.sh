@@ -48,5 +48,5 @@ openstack security group rule create --proto tcp --dst-port 22 secgroup
 
 
 # Creating two CirrOS instances
-openstack server create --flavor m1.nano --image cirros --nic net-id=selfservice --security-group secgroup cirrhose1
-openstack server create --flavor m1.nano --image cirros --nic net-id=selfservice2 --security-group secgroup cirrhose2
+openstack server create --flavor m1.nano --image cirros --nic net-id=selfservice --security-group secgroup --key-name mykey cirrhose1
+openstack server create --flavor m1.nano --image cirros --nic net-id=selfservice2 --security-group secgroup --key-name mykey cirrhose2
