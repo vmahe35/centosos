@@ -12,7 +12,7 @@ systemctl start chronyd.service
 
 
 # Installing RDO repositories
-yum install -y centos-release-openstack-pike
+yum install -y centos-release-openstack-queens
 yum install -y https://rdoproject.org/repos/rdo-release.rpm
 yum upgrade -y
 yum install -y python-openstackclient
