@@ -46,6 +46,9 @@ openstack security group create secgroup --description "Allowing ICMP and SSH"
 openstack security group rule create --proto icmp secgroup
 openstack security group rule create --proto tcp --dst-port 22 secgroup
 
+# Create a keypair and upload it
+ssh-keygen -b 2048 -t rsa -q -N "" -f ./mykey
+openstack keypair create --public-key mykey.pub mykey
 
 # Creating two CirrOS instances
 openstack server create --flavor m1.nano --image cirros --nic net-id=selfservice --security-group secgroup --key-name mykey cirrhose1
