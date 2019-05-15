@@ -8,3 +8,6 @@ cp conf/httpd/conf.d/openstack-dashboard.conf /etc/httpd/conf.d/openstack-dashbo
 
 # Restart services
 systemctl restart httpd.service memcached.service
+
+# Allow HTTP traffic
+iptables -t filter -I INPUT 1 -p tcp --dport 80 -j ACCEPT
