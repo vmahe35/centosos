@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 export PASS="root"
 
 # Creating Nova databases
@@ -62,6 +64,8 @@ yum install -y openstack-nova-api openstack-nova-conductor \
   openstack-nova-scheduler openstack-nova-placement-api
 
 cp conf/nova/nova.conf /etc/nova/nova.conf
+IP=$(ip a s eth0 | grep 'inet ' | awk '{print $2}' | awk -F "/" '{print $1}')
+sed -i "/my_ip=/ s/$/$IP/" /etc/nova/nova.conf
 
 cp conf/httpd/conf.d/00-nova-placement-api.conf /etc/httpd/conf.d/00-nova-placement-api.conf 
 

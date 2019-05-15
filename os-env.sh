@@ -12,7 +12,7 @@ systemctl start chronyd.service
 
 
 # Installing RDO repositories
-yum install -y centos-release-openstack-queens
+yum install -y centos-release-openstack-stein
 yum install -y https://rdoproject.org/repos/rdo-release.rpm
 yum upgrade -y
 yum install -y python-openstackclient
@@ -22,7 +22,10 @@ yum install -y openstack-selinux
 # Installing MySQL database
 yum install -y mariadb mariadb-server python2-PyMySQL
 
+
 cp conf/my.cnf.d/openstack.cnf /etc/my.cnf.d/openstack.cnf
+IP=$(ip a s eth0 | grep 'inet ' | awk '{print $2}' | awk -F "/" '{print $1}')
+sed -i "/bind-address = / s/$/$IP/" /etc/my.cnf.d/openstack.cnf
 
 systemctl enable mariadb.service
 systemctl start mariadb.service

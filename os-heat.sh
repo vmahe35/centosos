@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 export PASS="root"
 
 # Creating Heat database

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 export PASS="root"
 
 # Creating Nova databases
@@ -38,6 +40,9 @@ yum install -y openstack-neutron openstack-neutron-ml2 \
 cp conf/neutron/neutron.conf /etc/neutron/neutron.conf
 cp conf/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugins/ml2/ml2_conf.ini 
 cp conf/neutron/plugins/ml2/openvswitch_agent.ini /etc/neutron/plugins/ml2/openvswitch_agent.ini
+IP=$(ip a s eth0 | grep 'inet ' | awk '{print $2}' | awk -F "/" '{print $1}')
+sed -i "/local_ip = / s/$/$IP/" /etc/neutron/plugins/ml2/openvswitch_agent.ini
+
 cp conf/neutron/l3_agent.ini /etc/neutron/l3_agent.ini
 cp conf/neutron/dhcp_agent.ini /etc/neutron/dhcp_agent.ini
 cp conf/neutron/metadata_agent.ini /etc/neutron/metadata_agent.ini

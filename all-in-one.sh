@@ -6,5 +6,6 @@
 ./os-nova.sh
 ./os-neutron.sh
 ./os-heat.sh
-
+./os-horizon.sh
+./creation.sh
 

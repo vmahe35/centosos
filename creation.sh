@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 source admin-openrc
 
 # Creating provider network
