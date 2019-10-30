@@ -2,56 +2,35 @@
 
 set -x
 
-source admin-openrc
+export OS_CLOUD=openstack
 
-# Creating provider network
-# openstack network create  --share --external \
-#   --provider-physical-network provider \
-#   --provider-network-type flat provider
-#
-# ip address add 172.16.0.1/24 dev br-provider
-# ip link set up dev br-provider
-#
-# openstack subnet create --network provider \
-#   --allocation-pool start=172.16.0.201,end=172.16.0.250 \
-#   --dns-nameserver 10.193.21.160 --gateway 172.16.0.1 \
-#   --subnet-range 172.16.0.0/24 provider
-#
-# iptables -t nat -I POSTROUTING 1 -s 172.16.0.0/24 -j MASQUERADE
+# Upload the Ubuntu 18.04 VM image
+openstack --insecure image create "ubuntu-18-04" --file /data/images/bionic-server-cloudimg-amd64.img --disk-format qcow2 --container-format bare
 
 # Creating 2 Self-Service networks
-openstack network create selfservice
+openstack --insecure network create selfservice
 
-openstack subnet create --network selfservice \
+openstack --insecure subnet create --network selfservice \
   --dns-nameserver 10.193.21.160 --gateway 10.0.0.1 \
   --subnet-range 10.0.0.0/24 selfservice-subnet
 
-openstack network create selfservice2
-
-openstack subnet create --network selfservice2 \
-  --dns-nameserver 10.193.21.160 --gateway 10.0.1.1 \
-  --subnet-range 10.0.1.0/24 selfservice2-subnet
-
 # Creating router and ports to networks
-openstack router create router
+openstack --insecure router create router
 
-openstack router add subnet router selfservice-subnet
-openstack router add subnet router selfservice2-subnet
+openstack --insecure router add subnet router selfservice-subnet
 
-openstack router set --external-gateway provider router
-
-# Creating nano flavor
-# openstack flavor create --id 0 --vcpus 1 --ram 64 --disk 1 m1.nano
+openstack --insecure router set --external-gateway external router
 
 # Opening ICMP and SSH ports in security group default
-openstack security group create secgroup --description "Allowing ICMP and SSH"
-openstack security group rule create --proto icmp secgroup
-openstack security group rule create --proto tcp --dst-port 22 secgroup
+openstack --insecure security group create secgroup --description "Allowing ICMP and SSH"
+openstack --insecure security group rule create --proto icmp secgroup
+openstack --insecure security group rule create --proto tcp --dst-port 22 secgroup
 
 # Create a keypair and upload it
-ssh-keygen -b 2048 -t rsa -q -N "" -f ./mykey
-openstack keypair create --public-key mykey.pub mykey
+# ssh-keygen -b 2048 -t rsa -q -N "" -f ./mykey
+openstack --insecure keypair create --public-key ~/keys/magellan_training_key.pub magellan_training_key
 
-# Creating two CirrOS instances
-openstack server create --flavor m1.tiny --image "cirros-0.4.0" --nic net-id=selfservice --security-group secgroup --key-name mykey cirrhose1
-openstack server create --flavor m1.tiny --image "cirros-0.4.0" --nic net-id=selfservice2 --security-group secgroup --key-name mykey cirrhose2
+# Creating VM instances
+openstack --insecure server create --flavor m1.tiny --image "ubuntu-18-04" --nic net-id=selfservice --security-group secgroup --key-name magellan_training_key bastion
+openstack --insecure server create --flavor m1.tiny --image "ubuntu-18-04" --nic net-id=selfservice --security-group secgroup --key-name magellan_training_key ubuntu-01
+# openstack --insecure server create --flavor m1.tiny --image "cirros-0.4.0" --nic net-id=selfservice --security-group secgroup --key-name magellan_training_key cirros-01
