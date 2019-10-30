@@ -5,7 +5,7 @@ set -x
 export OS_CLOUD=openstack
 
 # Upload the Ubuntu 18.04 VM image
-openstack --insecure image create "ubuntu-18-04" --file /data/images/bionic-server-cloudimg-amd64.img --disk-format qcow2 --container-format bare
+openstack --insecure image create "ubuntu-18-04" --file ~/images/bionic-server-cloudimg-amd64.img --disk-format qcow2 --container-format bare
 
 # Creating 2 Self-Service networks
 openstack --insecure network create selfservice
